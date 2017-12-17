@@ -90,10 +90,29 @@ printfn "Return Value: %d" (callProcedure1 10 20)
 //-----------------------------
 // Updating the database
 //-----------------------------
+let newRecord = new dbSchema.ServiceTypes.Table1(Id = 100,
+                                                   TestData1 = 35, 
+                                                   TestData2 = 2.0,
+                                                   Name = "Testing123")
+let newValues =
+    [ for i in [1 .. 10] ->
+      new dbSchema.ServiceTypes.Table3(Id = 700 + i,
+        Name = "Testing" + i.ToString(),
+        Data = i) ]
 
+  // Insert the new data into the database.
+db.Table1.InsertOnSubmit(newRecord)
+db.Table3.InsertAllOnSubmit(newValues)
+
+try
+    db.DataContext.SubmitChanges()
+    printfn "Successfully inserted new rows."
+  with
+  | exn -> printfn "Exception:\n%s" exn.Message
 
 
 // Enable the logging of database activity to the console.
 db.DataContext.Log <- System.Console.Out
+Console.ReadKey() |> ignore
 
 
